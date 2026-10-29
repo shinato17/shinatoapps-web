@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1366, initial-scale=0.28, maximum-scale=2.0, user-scalable=yes">
+    <title>Shinato POS | Kasa Demosu</title>
+    
+    <!-- DEMO yazısı için MuseoModerno Fontu -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MuseoModerno:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+
+    <div class="pos-app-shell">
+        
+        <!-- SOL SIDEBAR -->
+        <aside class="pos-sidebar">
+            <div class="sidebar-top">
+                <div class="demo-header-title">DEMO</div>
+                <div class="sidebar-timer-box" id="demo-timer-display">60:00</div>
+                <button class="sidebar-btn help-btn" onclick="openHelpModal()">
+                    <span>Yardım</span>
+                </button>
+            </div>
+
+            <!-- Orta 6 Ana Menü -->
+            <nav class="sidebar-mid-menus">
+                <button class="sidebar-btn menu-btn active" data-screen="Kasa" onclick="showScreen('Kasa')">
+                    <span>Kasa</span>
+                </button>
+                <button class="sidebar-btn menu-btn" data-screen="İşlemler" onclick="showScreen('İşlemler')">
+                    <span>İşlemler</span>
+                </button>
+                <button class="sidebar-btn menu-btn" data-screen="Katalog" onclick="showScreen('Katalog')">
+                    <span>Katalog</span>
+                </button>
+                <button class="sidebar-btn menu-btn" data-screen="Kampanyalar" onclick="showScreen('Kampanyalar')">
+                    <span>Kampanyalar</span>
+                </button>
+                <button class="sidebar-btn menu-btn" data-screen="İstatistikler" onclick="showScreen('İstatistikler')">
+                    <span>İstatistikler</span>
+                </button>
+                <button class="sidebar-btn menu-btn" data-screen="Gün Sonu" onclick="showScreen('Gün Sonu')">
+                    <span>Gün Sonu</span>
+                </button>
+            </nav>
+
+            <!-- En Alt: Kişiselleştir Popup + Kişiselleştir Butonu + Müşteri Ekranı -->
+            <div class="sidebar-bottom">
+                
+                <!-- Kasa Düğmesinin Üstünü Tamamen Kapatan Kişiselleştir Popup -->
+                <div class="personalize-popup" id="personalize-popup" style="display: none;">
+                    <div class="pers-title">Tema Rengi</div>
+                    <canvas id="color-wheel-canvas" width="156" height="156"></canvas>
+                    
+                    <!-- Beyazdan Siyaha Parlaklık Skalası -->
+                    <div class="pers-bright-wrap">
+                        <input type="range" id="color-brightness-slider" class="pers-brightness-slider" min="8" max="65" value="22"
+                            oninput="handleBrightnessSlider(this.value)" title="Parlaklık (Beyaz - Siyah)">
+                    </div>
+
+                    <input type="text" id="color-hex-input" class="pers-hex-input" value="#500062" maxlength="7" spellcheck="false">
+                    <div class="pers-slots-label">Kayıtlı Renkler</div>
+                    <div class="pers-slots-row">
+                        <button class="pers-slot-btn" id="color-slot-0" onclick="handleColorSlotClick(0)">+</button>
+                        <button class="pers-slot-btn" id="color-slot-1" onclick="handleColorSlotClick(1)">+</button>
+                        <button class="pers-slot-btn" id="color-slot-2" onclick="handleColorSlotClick(2)">+</button>
+                    </div>
+                </div>
+
+                <!-- Tek tıkla açar/kapatır, ÇİFT TIKLA Shinato Moruna döner ve kayıtlı renkleri sıfırlar -->
+                <button class="sidebar-btn personalize-btn" id="btn-personalize"
+                    onclick="togglePersonalizePopup(event)"
+                    ondblclick="resetPersonalizeToDefault(event)"
+                    title="Açmak için tıklayın | Sıfırlamak için çift tıklayın">
+                    <span>Kişiselleştir</span>
+                </button>
+
+                <button class="sidebar-btn customer-screen-btn" id="btn-cust-screen" onclick="toggleCustomerDisplay()">
+                    <span>Müşteri Ekranı</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- SAĞ İÇERİK ALANI -->
+        <main class="pos-content-area" id="content-area">
+            
+            <!-- =========================================================
+                 1. KASA EKRANI (view_pos.py)
+                 ========================================================= -->
+            <div class="screen-view active" id="screen-Kasa">
+                <div class="pos-view-grid">
+                    <div class="catalog-container" id="catalog-container"></div>
+                    <div class="pos-vertical-separator"></div>
+
+                    <div class="receipt-container">
+                        <div class="receipt-top-header">
+                            <div class="receipt-title" id="lbl-receipt-title">Fiş - 291026001</div>
+                            <div class="win-ctrl-frame">
+                                <button class="ctrl-sq-btn" id="btn-staff" onclick="toggleStaffDiscount()" title="Personel İndirimi">P</button>
+                                <button class="ctrl-sq-btn close-sq" onclick="confirmExit()" title="Ana Sayfaya Dön">X</button>
+                            </div>
+                        </div>
+
+                        <div class="receipt-outer">
+                            <div class="fixed-cols-header">
+                                <span class="col-qty">Adet</span>
+                                <span class="col-name">İsim</span>
+                                <span class="col-price">Fiyat</span>
+                            </div>
+                            <div class="header-sep"></div>
+                            <div class="receipt-scroll-area" id="receipt-box"></div>
+                        </div>
+
+                        <div class="discount-box" id="discount-box" style="display: none;">
+                            <span id="lbl-discount">Aktif İndirim: -</span>
+                        </div>
+
+                        <div class="total-box">
+                            <span class="total-title">Toplam</span>
+                            <span class="total-amount" id="lbl-total-amount">0 TL</span>
+                        </div>
+
+                        <div class="mid-bar-container" id="mid-bar-container"></div>
+
+                        <div class="barcode-box">
+                            <input type="text" id="entry-barcode" placeholder="Barkod" autocomplete="off">
+                        </div>
+
+                        <div class="bottom-bar-container" id="bottom-bar-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 2. İŞLEMLER EKRANI (view_sales.py)
+                 ========================================================= -->
+            <div class="screen-view" id="screen-İşlemler">
+                <div class="sales-view-wrapper">
+                    <div class="sales-top-bar">
+                        <h1 class="sales-title">İşlemler</h1>
+                        <div class="sales-right-controls">
+                            <button class="sales-ctrl-btn" id="btn-sales-status" onclick="toggleSalesStatusFilter()">Onaylananlar</button>
+                            <button class="sales-ctrl-btn date-picker-btn" id="btn-sales-datepicker" onclick="openDualCalendarPopup('sales')">Tarih seç: 29/10/2026</button>
+                            <button class="sales-ctrl-btn today-btn active-today" id="btn-sales-today" onclick="resetSalesToToday()">Bugün</button>
+                            <button class="ctrl-sq-btn close-sq" onclick="confirmExit()" title="Ana Sayfaya Dön">X</button>
+                        </div>
+                    </div>
+
+                    <div class="sales-table-outer">
+                        <div class="sales-table-header sales-grid-cols">
+                            <div class="s-cell">ID</div><div class="s-vline"></div>
+                            <div class="s-cell">Tarih</div><div class="s-vline"></div>
+                            <div class="s-cell">Saat</div><div class="s-vline"></div>
+                            <div class="s-cell">Tutar</div><div class="s-vline"></div>
+                            <div class="s-cell">İndirim</div><div class="s-vline"></div>
+                            <div class="s-cell">Ödeme</div><div class="s-vline"></div>
+                            <div class="s-cell">İçerik</div><div class="s-vline"></div>
+                            <div class="s-cell">İptal</div>
+                        </div>
+                        <div class="sales-header-bottom-line"></div>
+                        <div class="sales-table-body" id="sales-table-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 3. KATALOG EKRANI (view_catalog.py)
+                 ========================================================= -->
+            <div class="screen-view" id="screen-Katalog">
+                <div class="catalog-view-wrapper">
+                    <div class="cat-left-panel">
+                        <div class="cat-panel-title">Katalog</div>
+
+                        <div class="cat-selector-wrapper">
+                            <div class="cat-selector-box" id="cat-selector-box" onclick="toggleCategoryDropdown(event)">
+                                <span id="lbl-cat-selector">Kategori Seçin</span>
+                                <span class="cat-arrow">▼</span>
+                            </div>
+                            <div class="cat-dropdown-menu" id="cat-dropdown-menu" style="display: none;"></div>
+                        </div>
+
+                        <div class="cat-input-box grey-border">
+                            <input type="text" id="entry-cat-name" placeholder="O anki Kategori ismi" disabled autocomplete="off">
+                        </div>
+
+                        <div class="cat-sub-title">Ürünler</div>
+
+                        <div class="cat-products-outer">
+                            <div class="cat-products-list" id="cat-products-list"></div>
+                        </div>
+                    </div>
+
+                    <div class="cat-right-panel">
+                        <div class="cat-win-ctrl">
+                            <button class="ctrl-sq-btn close-sq" onclick="confirmExit()" title="Ana Sayfaya Dön">X</button>
+                        </div>
+
+                        <div class="cat-spacer-top"></div>
+
+                        <div class="cat-top-btns-row">
+                            <button class="cat-new-prod-btn" id="btn-new-product" onclick="toggleNewProductMode()">+ Yeni Ürün</button>
+                        </div>
+
+                        <div class="cat-field-label">Sıra</div>
+                        <div class="cat-input-box sira-box">
+                            <input type="text" id="entry-prod-sira" autocomplete="off">
+                        </div>
+
+                        <div class="cat-field-label">Adı*</div>
+                        <div class="cat-input-box">
+                            <input type="text" id="entry-prod-name" autocomplete="off">
+                        </div>
+
+                        <div class="cat-field-label">Barkodu</div>
+                        <div class="cat-input-box">
+                            <input type="text" id="entry-prod-barcode" autocomplete="off">
+                        </div>
+
+                        <div class="cat-field-label">Fiyatı*</div>
+                        <div class="cat-input-box" style="margin-bottom: 20px;">
+                            <input type="text" id="entry-prod-price" autocomplete="off">
+                        </div>
+
+                        <div class="cat-dates-row">
+                            <div class="cat-date-col">
+                                <div class="cat-date-label">Eklenme Tarihi</div>
+                                <div class="cat-date-box" id="lbl-added-val">-</div>
+                            </div>
+                            <div class="cat-date-col">
+                                <div class="cat-date-label">Son Fiyat Değişim Tarihi</div>
+                                <div class="cat-date-box" id="lbl-price-date-val">-</div>
+                            </div>
+                        </div>
+
+                        <div class="cat-flex-spacer"></div>
+
+                        <div class="cat-bottom-bar">
+                            <div>
+                                <button class="cat-active-toggle-btn" id="btn-active-toggle" style="display: none;" onclick="toggleProductActiveState()">Aktif</button>
+                            </div>
+                            <div class="cat-actions-group">
+                                <button class="cat-action-btn" onclick="openCopyOrMovePopup('copy')">Kopyala</button>
+                                <button class="cat-action-btn" onclick="openCopyOrMovePopup('move')">Taşı</button>
+                                <button class="cat-action-btn delete-btn" onclick="openDeleteProductConfirmPopup()">Sil</button>
+                                <button class="cat-action-btn save-btn" onclick="saveCatalogChanges()">Kaydet</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 4. KAMPANYALAR EKRANI (view_campaigns.py -> campaigns.js)
+                 ========================================================= -->
+            <div class="screen-view" id="screen-Kampanyalar">
+                <div class="campaigns-view-wrapper">
+                    <div class="camp-top-bar">
+                        <h1 class="camp-title">Kampanyalar</h1>
+                        <button class="ctrl-sq-btn close-sq" onclick="confirmExit()" title="Ana Sayfaya Dön">X</button>
+                    </div>
+
+                    <div class="camp-selector-row">
+                        <div class="camp-type-selector-wrap">
+                            <div class="camp-selector-box" id="camp-selector-box" onclick="toggleCampaignTypeDropdown(event)">
+                                <span id="lbl-selected-camp-name">Harcama İkramı</span>
+                                <span class="cat-arrow">▼</span>
+                            </div>
+                            <div class="camp-dropdown-menu" id="camp-type-dropdown" style="display: none;"></div>
+                        </div>
+
+                        <div class="camp-code-box" id="lbl-selected-camp-code">IKRM</div>
+
+                        <div class="camp-check-group" onclick="toggleDiscountStacking()">
+                            <button class="camp-check-btn" id="btn-stack-check"></button>
+                            <span class="camp-check-label" id="lbl-stack-text">İndirim Çakışması</span>
+                        </div>
+
+                        <div class="camp-check-group" onclick="toggleStaffDiscountFeature()">
+                            <button class="camp-check-btn" id="btn-staff-check"></button>
+                            <span class="camp-check-label" id="lbl-staff-text">Personel İndirimi</span>
+                        </div>
+                    </div>
+
+                    <div class="camp-rule-builder-outer">
+                        <div class="camp-rule-sentence" id="camp-rule-sentence"></div>
+                        <button class="camp-add-btn" onclick="handleAddCampaign()">+</button>
+                    </div>
+
+                    <div class="camp-sub-title">Kampanyalarım</div>
+                    <div class="camp-table-outer">
+                        <div class="camp-table-header camp-grid-cols">
+                            <div class="c-cell">Kampanya</div><div class="s-vline"></div>
+                            <div class="c-cell left-align">Kuralı</div><div class="s-vline"></div>
+                            <div class="c-cell">Tarihi</div><div class="s-vline"></div>
+                            <div class="c-cell">Durumu</div><div class="s-vline"></div>
+                            <div class="c-cell">Reklam</div><div class="s-vline"></div>
+                            <div class="c-cell">Sil</div>
+                        </div>
+                        <div class="sales-header-bottom-line"></div>
+                        <div class="camp-table-body" id="camp-table-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 5. İSTATİSTİKLER EKRANI (view_stats.py -> stats.js)
+                 ========================================================= -->
+            <div class="screen-view" id="screen-İstatistikler">
+                <div class="stats-view-wrapper">
+                    <div class="stats-top-bar">
+                        <h1 class="stats-title">İstatistikler</h1>
+                        <div class="stats-right-controls">
+                            <button class="sales-ctrl-btn" id="btn-stats-custom" onclick="openDualCalendarPopup('stats')">Tarih Seç</button>
+                            <button class="sales-ctrl-btn" id="btn-stats-month" onclick="applyStatsPeriodFilter('month')">Bu ay</button>
+                            <button class="sales-ctrl-btn" id="btn-stats-week" onclick="applyStatsPeriodFilter('week')">Bu hafta</button>
+                            <button class="sales-ctrl-btn today-btn active-today" id="btn-stats-today" onclick="applyStatsPeriodFilter('today')">Bugün</button>
+                            <button class="ctrl-sq-btn close-sq" onclick="confirmExit()" title="Ana Sayfaya Dön">X</button>
+                        </div>
+                    </div>
+
+                    <div class="stats-body-grid">
+                        <div class="stats-col">
+                            <div class="stats-sec-title">Finans</div>
+                            <div class="stats-box top-stats-box">
+                                <div class="st-metric-group">
+                                    <div class="st-label">Toplam Ciro</div>
+                                    <div class="st-val-box" id="st-total-ciro">0 TL</div>
+                                </div>
+                                <div class="st-split-row">
+                                    <div class="st-metric-group">
+                                        <div class="st-label blue-txt">Kart</div>
+                                        <div class="st-val-box blue-box" id="st-kart-ciro">0 TL</div>
+                                    </div>
+                                    <div class="st-metric-group">
+                                        <div class="st-label green-txt">Nakit</div>
+                                        <div class="st-val-box green-box" id="st-nakit-ciro">0 TL</div>
+                                    </div>
+                                </div>
+                                <div class="st-ratio-bar-outer" id="st-ratio-bar"></div>
+                            </div>
+
+                            <div class="stats-sec-title">Kampanyalar</div>
+                            <div class="stats-box bot-stats-box">
+                                <div class="st-metric-group">
+                                    <div class="st-label">Toplam indirim</div>
+                                    <div class="st-val-box" id="st-total-discount">0 TL</div>
+                                </div>
+                                <div class="st-metric-group">
+                                    <div class="st-label">En çok kullanılan kampanya</div>
+                                    <div class="st-val-box" id="st-top-campaign">-</div>
+                                </div>
+                                <div class="st-metric-group">
+                                    <div class="st-label">Kampanyalı satış yüzdesi</div>
+                                    <div class="st-val-box" id="st-campaign-rate">%0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats-col">
+                            <div class="stats-sec-title">Ürünler</div>
+                            <div class="stats-box top-stats-box">
+                                <div class="st-metric-group">
+                                    <div class="st-label">En çok satan ürün</div>
+                                    <div class="st-val-box" id="st-most-sold">-</div>
+                                </div>
+                                <div class="st-metric-group">
+                                    <div class="st-label">En çok ciro getiren ürün</div>
+                                    <div class="st-val-box" id="st-most-rev">-</div>
+                                </div>
+                                <div class="st-metric-group">
+                                    <div class="st-label grey-txt" id="st-least-title">En az satan ürün</div>
+                                    <div class="st-val-box grey-box" id="st-least-sold" onclick="openLeastSoldPopup()"></div>
+                                </div>
+                            </div>
+
+                            <div class="stats-sec-title">Ürün Satışları</div>
+                            <div class="stats-box bot-stats-box prod-ranking-box" id="st-prod-ranking-list"></div>
+                        </div>
+
+                        <div class="stats-col">
+                            <div class="stats-sec-title">Satış Analizi</div>
+                            <div class="stats-box full-stats-box">
+                                <div class="st-hourly-header">
+                                    <span>İşlek Saatler</span>
+                                </div>
+                                <div class="st-hourly-chart-box">
+                                    <canvas id="st-hourly-canvas"></canvas>
+                                </div>
+
+                                <div class="st-multiday-box" id="st-multiday-box">
+                                    <div class="st-metric-group">
+                                        <div class="st-label grey-txt" id="st-best-rev-day-title">En yüksek ciroya sahip gün</div>
+                                        <div class="st-val-box grey-box" id="st-best-rev-day"></div>
+                                    </div>
+                                    <div class="st-metric-group">
+                                        <div class="st-label grey-txt" id="st-best-avg-day-title">Sepet Ortalaması En Yüksek Gün</div>
+                                        <div class="st-val-box grey-box" id="st-best-avg-day"></div>
+                                    </div>
+                                    <div class="st-daily-chart-box" id="st-daily-chart-box">
+                                        <canvas id="st-daily-canvas"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 6. GÜN SONU EKRANI (view_endofday.py -> endofday.js)
+                 ========================================================= -->
+            <div class="screen-view" id="screen-Gün Sonu">
+                <div class="eod-view-wrapper">
+                    
+                    <!-- Üst Bar: Sağ Üstte [X] -->
+                    <div class="eod-top-bar">
+                        <button class="ctrl-sq-btn close-sq" onclick="confirmExit()" title="Ana Sayfaya Dön">X</button>
+                    </div>
+
+                    <!-- Orta Merkezi Alan -->
+                    <div class="eod-center-frame">
+                        <div class="eod-label">Saat</div>
+                        <div class="eod-clock-box" id="eod-lbl-clock">00:00:00</div>
+
+                        <div class="eod-label">Toplam Hasılat</div>
+                        <div class="eod-revenue-box" id="eod-lbl-revenue">0 TL</div>
+                        <div class="eod-sub-note">Detaylara İstatistikler sayfasından ulaşabilirsiniz.</div>
+
+                        <div class="eod-label">En çok satan 3 ürün</div>
+                        <div class="eod-top3-box" id="eod-top3-inner"></div>
+
+                        <div class="eod-already-taken" id="eod-lbl-already-taken"></div>
+
+                        <button class="eod-take-btn" id="eod-btn-take" onclick="openTakeEodConfirmPopup()">GÜN SONU AL</button>
+
+                        <div class="eod-warn-line1">Gün sonu işlemi geri alınamaz.</div>
+                        <div class="eod-warn-line2">Lütfen sistem üzerinden Gün sonu aldıktan sonra, POS<br>cihazınızdan ayrı olarak Gün Sonu almayı unutmayınız.</div>
+                    </div>
+
+                    <!-- Sağ Alt Köşe: Geçmiş Butonu -->
+                    <button class="eod-history-btn" onclick="openEodHistoryPopup()">Geçmiş</button>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ================= MÜŞTERİ EKRANI (view_customer.py Birebir Canvas) ================= -->
+    <div class="customer-display-modal" id="customer-display-win" style="display: none;">
+       <div class="cust-floating-bar" id="cust-drag-handle">
+            <span>🖥️ Müşteri Ekranı</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="cust-detach-btn" onclick="openDetachedCustomerWindow()" title="2. monitöre sürükleyebilmek için bağımsız pencere olarak açar">↗ 2. Ekrana Taşı (Ayrı Pencere)</button>
+                <button class="cust-close-x" onclick="toggleCustomerDisplay()">✕</button>
+            </div>
+        </div>
+        <div class="cust-canvas-holder">
+            <canvas id="customer-canvas" width="960" height="600"></canvas>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 1: GENEL BİLGİ (YARDIM) ================= -->
+    <div class="pos-blur-overlay active" id="modal-general-info">
+        <div class="info-modal-card">
+            <div class="info-modal-header">
+                <h2>Genel Bilgi</h2>
+                <button class="info-close-btn" onclick="closeHelpModal()">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="info-modal-scroll">
+                <div class="info-warning-banner">
+                    <strong>Uyarı</strong><br>
+                    DAHA İYİ BİR DENEYİM İÇİN DEMOYU LÜTFEN BİLGİSAYARINIZ ÜZERİNDE ÇALIŞTIRINIZ. MOBİL PLATFORMLARDA SİSTEM HATALI ÇALIŞABİLİR.
+                </div>
+
+                <h3>Genel Bilgi</h3>
+                <p>Sistem, işletmeler için kasa yazılımı olarak hazırlanmıştır.</p>
+                <p>Sistemdeki her buton özelleştirilebilir, yeni butonlar ve yeni işlevler işletmenize özel olarak tasarlanabilir. Bu demo, sistemin çalışma yapısını deneyimlemeniz ve fikir edinmeniz amacıyla hazırlanmıştır; tüm arayüz tasarımı ve işleyiş kontrolü tamamen sizin taleplerinize göre sıfırdan kurgulanabilir. Ayrıca sistem personel ve müdür olarak yetkilendirme rollerine ayrılabilir, personelinizin erişmesini istemediğiniz ekranlara şifreli kilit koyabilirsiniz.</p>
+
+                <h3>Ana Kasa</h3>
+                <p>Ana kasa menüsünden kataloğunuzdaki tüm ürünleri tek tek fişe ekleyebilir, adetlerini ayarlayabilirsiniz. Sistem, istenildiği takdirde tüm barkod sistemleriyle entegre çalışır ve anlık olarak para üstü hesabı yapabilir.</p>
+
+                <h3>İşlemler</h3>
+                <p>İşlemler sekmesinde kasada gerçekleşen tüm işlemleri tek tek görebilir ve iptal edebilirsiniz. İptal işleminin hangi aşamada gerçekleştirildiğini de tek tek inceleyebilirsiniz.</p>
+
+                <h3>Katalog</h3>
+                <p>Katalog sekmesinde istediğiniz sayıda kategori oluşturabilir ve kategorileri dilediğiniz gibi düzenleyebilirsiniz. Kategorilere istediğiniz ürünleri ekleyebilirsiniz. Ürünlerin sırasını dokunmatik ekranda sürükleyerek ya da sıra numarası vererek ayarlayabilirsiniz.</p>
+
+                <h3>Kampanyalar</h3>
+                <p>Kampanyalar sekmesinde istediğiniz şartları seçerek kampanya tanımlayabilirsiniz. Sistem bu kampanyaları otomatik olarak algılar. Kampanyalar kasa ekranında canlı olarak görünür ve isterseniz müşteriye bakan ekranda reklamı da yapılabilir.</p>
+
+                <h3>İstatistikler</h3>
+                <p>İstatistikler sayfasında tüm satışların analizlerini görebilirsiniz.</p>
+
+                <h3>Gün Sonu</h3>
+                <p>Gün sonu sayfasında gün sonu alıp sistemi kapatabilirsiniz.</p>
+
+                <h3>Ayarlar</h3>
+                <p>Ayarlar, kurulan sisteme göre yapılır ve her şey sizin kontrolünüzdedir. Sistemin tasarımı, renkleri ve işlevselliği dilediğiniz gibi ayarlanabilir.</p>
+            </div>
+            <div class="info-modal-footer">
+                <button class="start-demo-btn" onclick="closeHelpModal()">Anladım, Demoyu Başlat →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 2: SATIŞ / KATALOG KAYDEDİLDİ & UYARI ================= -->
+    <div class="pos-blur-overlay" id="modal-simple-alert">
+        <div class="pos-dialog-box" id="simple-alert-box">
+            <div class="dialog-title" id="simple-alert-text">Kaydedildi</div>
+            <button class="dialog-ok-btn" onclick="closeSimpleAlertPopup()">Tamam</button>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 3: İŞLEM İÇERİĞİ DETAYI ================= -->
+    <div class="pos-blur-overlay" id="modal-sales-items">
+        <div class="pos-dialog-box sales-items-modal-box">
+            <div class="dialog-title" id="sales-items-title">İşlem İçeriği</div>
+            <div class="sales-items-scroll" id="sales-items-list"></div>
+            <button class="dialog-ok-btn" onclick="closeSalesItemsPopup()">Tamam</button>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 4: İŞLEM İPTAL ONAYI ================= -->
+    <div class="pos-blur-overlay" id="modal-sales-cancel">
+        <div class="pos-dialog-box" style="width: 430px; min-height: 200px;">
+            <div class="dialog-title">Bu işlem geri alınmaz,<br>iptal edilsin mi?</div>
+            <div class="dialog-btn-row">
+                <button class="dialog-red-btn" style="width: 140px;" onclick="confirmSalesCancelAction()">Evet, İptal Et</button>
+                <button class="dialog-cancel-btn" onclick="closeSalesCancelPopup()">Vazgeç</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 5: ÇİFT TAKVİMLİ TARİH SEÇİCİ ================= -->
+    <div class="pos-blur-overlay" id="modal-dual-calendar">
+        <div class="pos-dialog-box dual-cal-modal-box">
+            <div class="dual-cal-grid">
+                <div class="cal-column">
+                    <div class="cal-col-title">Başlangıç Tarihi</div>
+                    <div class="cal-holder" id="cal-holder-start"></div>
+                </div>
+                <div class="cal-column">
+                    <div class="cal-col-title">Bitiş Tarihi</div>
+                    <div class="cal-holder" id="cal-holder-end"></div>
+                </div>
+            </div>
+            <div class="dialog-btn-row" style="margin-top: 14px;">
+                <button class="dialog-ok-btn" style="width: 155px;" onclick="applyDualCalendarDates()">Seçimi Uygula</button>
+                <button class="dialog-cancel-btn" onclick="closeDualCalendarPopup()">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 6: ÜRÜN SİLME ONAYI ================= -->
+    <div class="pos-blur-overlay" id="modal-cat-delete">
+        <div class="pos-dialog-box" style="width: 420px; min-height: 200px; border-color: var(--red);">
+            <div class="dialog-title">Emin misiniz?<br>Bu işlem geri alınamaz.</div>
+            <div class="dialog-btn-row">
+                <button class="dialog-cancel-btn" onclick="closeDeleteProductConfirmPopup()">İptal</button>
+                <button class="dialog-red-btn" onclick="confirmDeleteProductAction()">Tamam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 7: ÜRÜN KOPYALA / TAŞI ================= -->
+    <div class="pos-blur-overlay" id="modal-cat-transfer">
+        <div class="pos-dialog-box transfer-modal-box">
+            <div class="dialog-title" id="transfer-modal-title">Kopyalanacak Kategoriyi Seçin</div>
+            <div class="transfer-cats-list" id="transfer-cats-list"></div>
+            <button class="dialog-red-btn" style="width: 140px; border-radius: 8px;" onclick="closeTransferPopup()">İptal</button>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 8: KAMPANYA SİLME ONAYI ================= -->
+    <div class="pos-blur-overlay" id="modal-camp-delete">
+        <div class="pos-dialog-box" style="width: 420px; min-height: 200px; border-color: var(--red);">
+            <div class="dialog-title">Bu kampanya silinsin mi?<br>Bu işlem geri alınamaz.</div>
+            <div class="dialog-btn-row">
+                <button class="dialog-cancel-btn" onclick="closeCampDeletePopup()">İptal</button>
+                <button class="dialog-red-btn" onclick="confirmCampDeleteAction()">Evet, Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 9: EN AZ SATAN ÜRÜNLER LİSTESİ ================= -->
+    <div class="pos-blur-overlay" id="modal-least-sold">
+        <div class="pos-dialog-box sales-items-modal-box">
+            <div class="dialog-title" id="least-sold-modal-title">En Az Satan Ürünler</div>
+            <div class="sales-items-scroll" id="least-sold-modal-list"></div>
+            <button class="dialog-ok-btn" onclick="closeLeastSoldPopup()">Tamam</button>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 10: GÜN SONU AL ONAY POPUP ================= -->
+    <div class="pos-blur-overlay" id="modal-eod-confirm">
+        <div class="pos-dialog-box" style="width: 430px; min-height: 210px;">
+            <div class="dialog-title">Gün sonu geri alınamaz,<br>emin misiniz?</div>
+            <div class="dialog-btn-row">
+                <button class="dialog-cancel-btn" onclick="closeTakeEodConfirmPopup()">İptal</button>
+                <button class="dialog-ok-btn" onclick="confirmTakeEodAction()">Evet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 11: GEÇMİŞ GÜN SONLARI POPUP ================= -->
+    <div class="pos-blur-overlay" id="modal-eod-history">
+        <div class="pos-dialog-box eod-history-modal-box">
+            <div class="eod-hist-header">
+                <button class="eod-trash-btn" onclick="openClearEodHistoryConfirmPopup()" title="Geçmişi Sil">🗑</button>
+                <div class="dialog-title">Geçmiş Gün Sonları</div>
+                <div style="width: 40px;"></div>
+            </div>
+            <div class="eod-hist-rows-holder" id="eod-hist-rows"></div>
+            <div class="eod-hist-pagination" id="eod-hist-pagination"></div>
+            <button class="dialog-ok-btn" onclick="closeEodHistoryPopup()">Kapat</button>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 12: GEÇMİŞ GÜN SONLARINI SİLME ONAYI ================= -->
+    <div class="pos-blur-overlay" id="modal-eod-clear-confirm">
+        <div class="pos-dialog-box" style="width: 430px; min-height: 210px; border-color: var(--red);">
+            <div class="dialog-title" style="font-size: 19px;">Geçmiş gün sonları silinecek,<br>emin misiniz?<br>Bu adım geri alınamaz.</div>
+            <div class="dialog-btn-row">
+                <button class="dialog-cancel-btn" onclick="closeClearEodHistoryConfirmPopup()">İptal</button>
+                <button class="dialog-red-btn" onclick="confirmClearEodHistoryAction()">Evet, Sil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 13: 30 DAKİKA DEMO SÜRESİ BİTTİ EKRANI ================= -->
+    <div class="pos-blur-overlay" id="modal-demo-expired">
+        <div class="pos-dialog-box" style="width: 460px; min-height: 290px; border-color: var(--red); gap: 12px;">
+            <div class="dialog-title" style="font-size: 22px;">
+                Demo bitti<br>
+                <span style="font-size:16px; color: var(--cat-line);">00.00'da tekrar demoyu kullanabilirsiniz</span>
+            </div>
+
+            <!-- Tek Seferlik +1 Saat Uzatma Şifre Alanı -->
+            <div id="demo-extend-section" style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; margin: 4px 0;">
+                <input type="password" id="entry-demo-extend-pwd" placeholder="Ek Süre Şifresi" autocomplete="off"
+                    style="width: 240px; height: 42px; background: var(--product-bg); border: 2px solid var(--purple-border); color: var(--off-white); font-size: 18px; font-weight: 700; text-align: center; outline: none;">
+                <div id="lbl-demo-extend-err" style="color: var(--red); font-size: 13px; font-weight: 700; min-height: 18px;"></div>
+            </div>
+
+            <div class="dialog-btn-row">
+                <button class="dialog-ok-btn" id="btn-demo-extend" style="width: 175px;" onclick="tryExtendDemoTime()">Süreyi Uzat (+1 Saat)</button>
+                <button class="dialog-red-btn" style="width: 165px;" onclick="window.location.href='../index.html'">Ana Sayfaya Dön</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 14: ÇIKIŞ ONAYI ================= -->
+    <div class="pos-blur-overlay" id="modal-exit-confirm">
+        <div class="pos-dialog-box">
+            <div class="dialog-title">Ana sayfaya dönmek istiyor musunuz?</div>
+            <div class="dialog-btn-row">
+                <button class="dialog-red-btn" onclick="window.location.href='../index.html'">Evet</button>
+                <button class="dialog-cancel-btn" onclick="closeExitModal()">Hayır</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AYRI AYRI MODÜLER JS DOSYALARI -->
+    <script src="pos.js"></script>
+    <script src="campaigns.js"></script>
+    <script src="stats.js"></script>
+    <script src="endofday.js"></script>
+    <script src="customer.js"></script>
+</body>
+</html>

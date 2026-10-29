@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shinato Software | Kodun Kılıçtan Keskin Hali</title>
+    
+    <!-- Google Fonts: MuseoModerno, Michroma ve Raleway -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Michroma&family=MuseoModerno:wght@400;500&family=Raleway:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main class="main-wrapper">
+        
+        <!-- ÜST MOR ALAN -->
+        <section class="hero-section">
+            <div class="particles-container" id="particles"></div>
+
+            <div class="hero-container">
+                <div class="samurai-box">
+                    <img src="samurai.png" alt="Shinato Samurai" class="samurai-img">
+                </div>
+
+                <div class="brand-box">
+                    <h1 class="brand-title">
+                        <span class="title-shinato">Shinato</span>
+                        <span class="title-software">Software</span>
+                    </h1>
+                    <p class="brand-slogan" id="typewriter-slogan"></p>
+                </div>
+            </div>
+
+            <div class="katana-divider"></div>
+        </section>
+
+        <!-- ALT GRİ ALAN VE BUTONLAR -->
+        <section class="bottom-section">
+            <div class="button-group">
+                <button class="nav-btn btn-side btn-anim-1" data-modal="modal-hizmetler">
+                    <span class="btn-text">Çözümler</span>
+                    <span class="btn-line"></span>
+                </button>
+
+                <button class="nav-btn btn-center btn-anim-2" data-modal="modal-demolar">
+                    <span class="btn-text">Demolar</span>
+                    <span class="btn-line"></span>
+                </button>
+
+                <button class="nav-btn btn-side btn-anim-3" data-modal="modal-iletisim">
+                    <span class="btn-text">İletişim</span>
+                    <span class="btn-line"></span>
+                </button>
+            </div>
+
+            <footer class="status-bar">
+                <div class="status-copy">© 2026 Shinato Software</div>
+            </footer>
+        </section>
+
+    </main>
+
+    <!-- ================= POPUP (MODAL) EKRANLARI ================= -->
+
+    <!-- 1. HİZMETLER POPUP -->
+    <div class="modal-overlay" id="modal-hizmetler">
+        <div class="modal-box">
+            <button class="modal-close" aria-label="Kapat">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2 class="modal-title">Çözümlerimiz</h2>
+            <div class="modal-body">
+                <div style="display: flex; flex-direction: column; gap: 16px; max-height: 58vh; overflow-y: auto; padding-right: 8px; font-size: 0.96rem; line-height: 1.55;">
+                    
+                    <div style="background: rgba(0, 0, 0, 0.25); border-left: 3px solid #7b1fa2; padding: 12px 14px; border-radius: 0 10px 10px 0;">
+                        <h3 style="font-size: 1.05rem; font-weight: 700; color: #F2F0EB; margin-bottom: 4px;">Kasa (POS), Adisyon ve İşletme Sistemleri</h3>
+                        <p style="color: #C3C3C3; font-size: 0.9rem;">Kafe ve işletme operasyonlarının mutfağında bizzat bulundum; piyasadaki pek çok kasa ve adisyon programını sahada aktif olarak kullandım. Kasada neyin zaman kaybettirdiğini ve işletmecinin gerçekte neye ihtiyaç duyduğunu biliyorum. Dokunmatik ekran uyumlu, barkod ve müşteri ekranı destekli, kampanya ve istatistik motoruna sahip hızlı kasa yazılımlarını işletmenize özel olarak sıfırdan yazıyorum.</p>
+                    </div>
+
+                    <div style="background: rgba(0, 0, 0, 0.25); border-left: 3px solid #7b1fa2; padding: 12px 14px; border-radius: 0 10px 10px 0;">
+                        <h3 style="font-size: 1.05rem; font-weight: 700; color: #F2F0EB; margin-bottom: 4px;">SAP Business One & Kurumsal ERP Çözümleri</h3>
+                        <p style="color: #C3C3C3; font-size: 0.9rem;">Şirketlerin ERP geçiş süreçlerinde ve SAP Business One (SAP B1) sistemlerinde aktif tecrübeye sahibim. Süreç analizi, DTW ile veri aktarımı, B1UP özelleştirmeleri ve Crystal Reports ile kurumsal raporlama süreçlerini yürütüyorum. Ayrıca şirket içi operasyonları hızlandırmak için Excel VBA tabanlı özel görev ve iş takip panelleri (Dashboard) geliştiriyorum.</p>
+                    </div>
+
+                    <div style="background: rgba(0, 0, 0, 0.25); border-left: 3px solid #7b1fa2; padding: 12px 14px; border-radius: 0 10px 10px 0;">
+                        <h3 style="font-size: 1.05rem; font-weight: 700; color: #F2F0EB; margin-bottom: 4px;">ESP32, Akıllı Donanım ve Robotik Sistemler</h3>
+                        <p style="color: #C3C3C3; font-size: 0.9rem;">Yazılımı sadece ekran içinde bırakmıyor, fiziksel donanımla birleştiriyorum. ESP32 ve Arduino tabanlı mikrodenetleyiciler, ekran modülleri, enkoderler ve sensörler kullanarak akıllı masaüstü kontrol cihazları, özel elektronik üniteler ve robotik sistemler tasarlayıp kodluyorum.</p>
+                    </div>
+
+                    <div style="background: rgba(0, 0, 0, 0.25); border-left: 3px solid #7b1fa2; padding: 12px 14px; border-radius: 0 10px 10px 0;">
+                        <h3 style="font-size: 1.05rem; font-weight: 700; color: #F2F0EB; margin-bottom: 4px;">Özel Masaüstü, Web ve Veri Uygulamaları</h3>
+                        <p style="color: #C3C3C3; font-size: 0.9rem;">Hazır paket programların iş akışınıza uymadığı noktalarda; Python, SQL/SQLite ve modern web teknolojileriyle doğrudan ihtiyacınıza göre çalışan masaüstü programları, veri analizi araçları ve kurumsal web arayüzleri üretiyorum.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DEMOLAR POPUP -->
+    <div class="modal-overlay" id="modal-demolar">
+        <div class="modal-box">
+            <button class="modal-close" aria-label="Kapat">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2 class="modal-title">Demolar</h2>
+            <div class="modal-body">
+                <div class="demo-list">
+                    <a href="kasademo/index.html" class="demo-item">
+                        <div class="demo-info">
+                            <span class="demo-badge">CANLI SİMÜLASYON</span>
+                            <span class="demo-name">1. Kasa/Pos Demosu</span>
+                        </div>
+                        <span class="demo-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. İLETİŞİM POPUP -->
+    <div class="modal-overlay" id="modal-iletisim">
+        <div class="modal-box">
+            <button class="modal-close" aria-label="Kapat">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2 class="modal-title">İletişim</h2>
+            
+            <!-- Sekme Geçiş Butonları -->
+            <div class="contact-tabs">
+                <button class="tab-btn active" id="tab-info-btn" onclick="switchContactTab('info')">İletişim Bilgileri</button>
+                <button class="tab-btn" id="tab-msg-btn" onclick="switchContactTab('msg')">Hızlı Mesaj / Teklif</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- SEKME 1: İLETİŞİM BİLGİLERİ (SOLUK KOPYALAMA İKONLU) -->
+                <div class="contact-panel active" id="panel-info">
+                    <div class="pro-contact-wrapper">
+                        
+                        <div class="profile-header">
+                            <div class="profile-avatar">MHK</div>
+                            <div class="profile-meta">
+                                <h3 class="profile-name">Mehmet Hakan Kaya</h3>
+                                <span class="profile-role">Founder & Software Developer</span>
+                            </div>
+                        </div>
+
+                        <div class="contact-rows">
+                            <!-- Ad Soyad -->
+                            <div class="contact-row-item" onclick="copyToClipboard('Mehmet Hakan Kaya', this)">
+                                <div class="row-icon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                </div>
+                                <div class="row-content">
+                                    <span class="row-label">Ad Soyad</span>
+                                    <span class="row-value">Mehmet Hakan Kaya</span>
+                                </div>
+                                <span class="copy-icon-box">
+                                    <svg class="svg-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <svg class="svg-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                            </div>
+
+                            <!-- Telefon -->
+                            <div class="contact-row-item" onclick="copyToClipboard('0553 960 22 28', this)">
+                                <div class="row-icon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                </div>
+                                <div class="row-content">
+                                    <span class="row-label">Telefon</span>
+                                    <span class="row-value">0553 960 22 28</span>
+                                </div>
+                                <span class="copy-icon-box">
+                                    <svg class="svg-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <svg class="svg-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                            </div>
+
+                            <!-- Kurumsal E-Posta -->
+                            <div class="contact-row-item" onclick="copyToClipboard('info@shinatoapps.com', this)">
+                                <div class="row-icon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                </div>
+                                <div class="row-content">
+                                    <span class="row-label">Kurumsal E-Posta</span>
+                                    <span class="row-value">info@shinatoapps.com</span>
+                                </div>
+                                <span class="copy-icon-box">
+                                    <svg class="svg-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <svg class="svg-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                            </div>
+
+                            <!-- Doğrudan E-Posta -->
+                            <div class="contact-row-item" onclick="copyToClipboard('mhakankaya0617@gmail.com', this)">
+                                <div class="row-icon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                </div>
+                                <div class="row-content">
+                                    <span class="row-label">Doğrudan E-Posta</span>
+                                    <span class="row-value">mhakankaya0617@gmail.com</span>
+                                </div>
+                                <span class="copy-icon-box">
+                                    <svg class="svg-copy" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                    <svg class="svg-check" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                </span>
+                            </div>
+
+                            <!-- LinkedIn (Doğrudan Tıklanınca Açılır, Sadece LinkedIn Yazar) -->
+                            <a href="https://www.linkedin.com/in/mehmet-hakan-kaya-152590353/" target="_blank" rel="noopener noreferrer" class="contact-row-item">
+                                <div class="row-icon">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                                </div>
+                                <div class="row-content">
+                                    <span class="row-value">LinkedIn</span>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- SEKME 2: SABİTLENMİŞ VE YAZDIKÇA OTOMATİK BÜYÜYEN MESAJ FORMU -->
+                <div class="contact-panel" id="panel-msg">
+                    <form class="quick-msg-form" id="quick-msg-form" onsubmit="handleQuickMessage(event)">
+                        <div class="form-group">
+                            <label>Adınız / İşletme Adı</label>
+                            <input type="text" id="msg-sender" required placeholder="Örn: Ahmet Yılmaz">
+                        </div>
+                        <div class="form-group">
+                            <label>İletişim Bilginiz (Telefon veya E-Posta)</label>
+                            <input type="text" id="msg-contact" required placeholder="Size nasıl dönüş yapalım?">
+                        </div>
+                        <div class="form-group">
+                            <label>Mesajınız veya Proje Detayları</label>
+                            <textarea id="msg-content" rows="3" required placeholder="İstediğiniz yazılım veya teklif detaylarını buraya yazabilirsiniz..." oninput="autoGrowTextarea(this)"></textarea>
+                        </div>
+                        <button type="submit" class="send-msg-btn" id="send-msg-btn">Mesajı Gönder</button>
+                        <div class="msg-status" id="msg-status"></div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. SLOGAN ANİMASYONU
+            const targetText = "Kodun kılıçtan keskin hali.";
+            const sloganEl = document.getElementById("typewriter-slogan");
+            const codeChars = "01/>_#[]*+-";
+            let index = 0;
+
+            function typeCodeEffect() {
+                if (index <= targetText.length) {
+                    const lockedPart = targetText.slice(0, index);
+                    let glitchChar = "";
+                    if (index < targetText.length) {
+                        glitchChar = codeChars[Math.floor(Math.random() * codeChars.length)];
+                    }
+                    sloganEl.innerHTML = lockedPart + `<span class="cursor-glitch">${glitchChar}</span><span class="coding-cursor">|</span>`;
+                    setTimeout(() => {
+                        index++;
+                        typeCodeEffect();
+                    }, 48);
+                } else {
+                    sloganEl.innerHTML = targetText + `<span class="coding-cursor">|</span>`;
+                }
+            }
+            setTimeout(typeCodeEffect, 400);
+
+            // 2. RÜZGAR KIVILCIMLARI
+            const particlesContainer = document.getElementById("particles");
+            for (let i = 0; i < 28; i++) {
+                const p = document.createElement("span");
+                p.className = "wind-particle";
+                p.style.left = Math.random() * 100 + "%";
+                p.style.top = Math.random() * 100 + "%";
+                p.style.width = (Math.random() * 55 + 30) + "px";
+                p.style.height = (Math.random() * 1.5 + 2) + "px";
+                p.style.animationDuration = (Math.random() * 4.5 + 3.5) + "s";
+                p.style.animationDelay = (Math.random() * 4) + "s";
+                particlesContainer.appendChild(p);
+            }
+        });
+
+        // 3. POPUP KONTROLLERİ
+        const buttons = document.querySelectorAll(".nav-btn");
+        const overlays = document.querySelectorAll(".modal-overlay");
+        const closeButtons = document.querySelectorAll(".modal-close");
+
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const modalId = btn.getAttribute("data-modal");
+                const targetModal = document.getElementById(modalId);
+                if (targetModal) targetModal.classList.add("active");
+            });
+        });
+
+        closeButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                btn.closest(".modal-overlay").classList.remove("active");
+            });
+        });
+
+        overlays.forEach(overlay => {
+            overlay.addEventListener("click", (e) => {
+                if (e.target === overlay) overlay.classList.remove("active");
+            });
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                overlays.forEach(overlay => overlay.classList.remove("active"));
+            }
+        });
+
+        // 4. TEK TIKLA KOPYALAMA (İKON ANİMASYONLU)
+        function copyToClipboard(text, rowElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                rowElement.classList.add("copied-row");
+                setTimeout(() => {
+                    rowElement.classList.remove("copied-row");
+                }, 1400);
+            });
+        }
+
+        // 5. YAZDIKÇA KUTUYU OTOMATİK BÜYÜTEN FONKSİYON (DIŞARI TAŞMAZ)
+        function autoGrowTextarea(el) {
+            el.style.height = "auto";
+            const nextHeight = Math.min(240, Math.max(84, el.scrollHeight));
+            el.style.height = nextHeight + "px";
+        }
+
+        // 6. İLETİŞİM SEKMELERİ GEÇİŞİ
+        function switchContactTab(tab) {
+            const infoBtn = document.getElementById("tab-info-btn");
+            const msgBtn = document.getElementById("tab-msg-btn");
+            const infoPanel = document.getElementById("panel-info");
+            const msgPanel = document.getElementById("panel-msg");
+
+            if (tab === "info") {
+                infoBtn.classList.add("active");
+                msgBtn.classList.remove("active");
+                infoPanel.classList.add("active");
+                msgPanel.classList.remove("active");
+            } else {
+                msgBtn.classList.add("active");
+                infoBtn.classList.remove("active");
+                msgPanel.classList.add("active");
+                infoPanel.classList.remove("active");
+            }
+        }
+
+        // 7. HIZLI MESAJ VE IP GÖNDERİMİ
+        async function handleQuickMessage(e) {
+            e.preventDefault();
+            const btn = document.getElementById("send-msg-btn");
+            const statusEl = document.getElementById("msg-status");
+            const sender = document.getElementById("msg-sender").value.trim();
+            const contact = document.getElementById("msg-contact").value.trim();
+            const contentEl = document.getElementById("msg-content");
+            const content = contentEl.value.trim();
+
+            btn.disabled = true;
+            btn.innerText = "Gönderiliyor...";
+            statusEl.innerText = "";
+
+            let visitorIP = "Alınamadı";
+            try {
+                const res = await fetch("https://api.ipify.org?format=json");
+                const data = await res.json();
+                if (data && data.ip) visitorIP = data.ip;
+            } catch (err) {}
+
+            const payload = {
+                _subject: `Shinato Yeni Mesaj: ${sender}`,
+                Gonderen: sender,
+                Iletisim_Bilgisi: contact,
+                Mesaj: content,
+                Ziyaretci_IP: visitorIP,
+                Cihaz_Tarayici: navigator.userAgent,
+                Tarih: new Date().toLocaleString("tr-TR")
+            };
+
+            try {
+                await fetch("https://formsubmit.co/ajax/mhakankaya0617@gmail.com", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {}
+
+            btn.disabled = false;
+            btn.innerText = "Mesajı Gönder";
+            statusEl.style.color = "#10b981";
+            statusEl.innerText = "Mesajınız başarıyla iletildi!";
+            document.getElementById("quick-msg-form").reset();
+            contentEl.style.height = "84px";
+        }
+    </script>
+</body>
+</html>
