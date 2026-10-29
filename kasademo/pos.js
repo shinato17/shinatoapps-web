@@ -1946,3 +1946,73 @@ function resetPersonalizeAtMidnight() {
         });
     });
 })();
+// ==========================================================================
+// 9. MOBİLDE VİDEO GİBİ ZORUNLU YATAY (LANDSCAPE) MOD VE TAM EKRAN KİLİDİ
+// ==========================================================================
+function applyMobileLandscapeScale() {
+    const winW = window.innerWidth;
+    const winH = window.innerHeight;
+    const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || Math.min(winW, winH) <= 920;
+
+    const DESIGN_W = 1366;
+    const DESIGN_H = 768;
+
+    if (!isMobileDevice) {
+        document.body.classList.remove("mobile-forced-landscape");
+        document.body.style.width = "100vw";
+        document.body.style.height = "100vh";
+        document.body.style.transform = "none";
+        return;
+    }
+
+    document.body.classList.add("mobile-forced-landscape");
+    document.body.style.width = DESIGN_W + "px";
+    document.body.style.height = DESIGN_H + "px";
+
+    const shell = document.querySelector(".pos-app-shell");
+    if (shell) {
+        shell.style.width = DESIGN_W + "px";
+        shell.style.height = DESIGN_H + "px";
+    }
+
+    if (winH > winW) {
+        // Telefon DİK tutuluyorsa: Ekranı 90 derece YAN ÇEVİR ve tam sığdır
+        const scale = Math.min(winH / DESIGN_W, winW / DESIGN_H);
+        const offsetX = winW - ((winW - DESIGN_H * scale) / 2);
+        const offsetY = (winH - DESIGN_W * scale) / 2;
+
+        document.body.style.transformOrigin = "0 0";
+        document.body.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(90deg) scale(${scale})`;
+    } else {
+        // Telefon YATAY tutuluyorsa: Doğrudan yatay ekrana tam oturt
+        const scale = Math.min(winW / DESIGN_W, winH / DESIGN_H);
+        const offsetX = (winW - DESIGN_W * scale) / 2;
+        const offsetY = (winH - DESIGN_H * scale) / 2;
+
+        document.body.style.transformOrigin = "0 0";
+        document.body.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    }
+}
+
+// "Anladım, Demoyu Başlat" tuşuna basılınca video gibi Tam Ekran + Yatay Moda geçer
+const _origCloseHelpModal = closeHelpModal;
+closeHelpModal = function() {
+    _origCloseHelpModal();
+    const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || Math.min(window.innerWidth, window.innerHeight) <= 920;
+    if (isMobileDevice) {
+        const docEl = document.documentElement;
+        const reqFs = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
+        if (reqFs && !document.fullscreenElement) {
+            reqFs.call(docEl).then(() => {
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock("landscape").catch(() => {});
+                }
+            }).catch(() => {});
+        }
+        setTimeout(applyMobileLandscapeScale, 120);
+    }
+};
+
+window.addEventListener("resize", applyMobileLandscapeScale);
+window.addEventListener("orientationchange", () => setTimeout(applyMobileLandscapeScale, 150));
+window.addEventListener("DOMContentLoaded", applyMobileLandscapeScale);
