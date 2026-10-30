@@ -3,8 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shinato Software | Kodun Kılıçtan Keskin Hali</title>
+    <title>Shinato Software | Kişiye ve İşletmeye Özel Yazılım Çözümleri</title>
     
+    <!-- GOOGLE ARAMA SONUÇLARINDA ÇIKACAK YAZI (SEO & OPEN GRAPH) -->
+    <meta name="description" content="Kişiye işletmeye özel yazılım çözümleri.">
+    <meta name="keywords" content="Shinato Software, özel yazılım, kasa programı, POS sistemi, adisyon yazılımı, SAP Business One, ESP32, Mehmet Hakan Kaya">
+    <meta name="author" content="Mehmet Hakan Kaya">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://shinatoapps.com/">
+
+    <!-- WhatsApp / LinkedIn / Google Paylaşım Görünümü -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shinatoapps.com/">
+    <meta property="og:title" content="Shinato Software">
+    <meta property="og:description" content="Kişiye işletmeye özel yazılım çözümleri.">
+    <meta property="og:image" content="https://shinatoapps.com/favicon-192.png">
+
+    <!-- 5 BOYUTLU FAVICON (SEKME VE GOOGLE İKONLARI) -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="shortcut icon" href="/favicon.jpg" type="image/jpeg">
+
     <!-- Google Fonts: MuseoModerno, Michroma ve Raleway -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -328,14 +350,35 @@
             }
         });
 
-        // 4. TEK TIKLA KOPYALAMA (İKON ANİMASYONLU)
+        // 4. HER TARAYICIDA VE TELEFONDA %100 ÇALIŞAN TEK TIKLA KOPYALAMA
         function copyToClipboard(text, rowElement) {
-            navigator.clipboard.writeText(text).then(() => {
+            function showSuccessTick() {
                 rowElement.classList.add("copied-row");
                 setTimeout(() => {
                     rowElement.classList.remove("copied-row");
                 }, 1400);
-            });
+            }
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(showSuccessTick).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+
+            function fallbackCopy(val) {
+                const tempInput = document.createElement("textarea");
+                tempInput.value = val;
+                tempInput.style.position = "fixed";
+                tempInput.style.opacity = "0";
+                document.body.appendChild(tempInput);
+                tempInput.focus();
+                tempInput.select();
+                try {
+                    document.execCommand("copy");
+                    showSuccessTick();
+                } catch (err) {}
+                document.body.removeChild(tempInput);
+            }
         }
 
         // 5. YAZDIKÇA KUTUYU OTOMATİK BÜYÜTEN FONKSİYON (DIŞARI TAŞMAZ)
@@ -365,15 +408,15 @@
             }
         }
 
-        // 7. HIZLI MESAJ VE IP GÖNDERİMİ
+        // 7. HIZLI MESAJ VE IP GÖNDERİMİ (DOĞRUDAN GÖNDERİM + YEDEK DESTEKLİ)
         async function handleQuickMessage(e) {
             e.preventDefault();
             const btn = document.getElementById("send-msg-btn");
             const statusEl = document.getElementById("msg-status");
             const sender = document.getElementById("msg-sender").value.trim();
             const contact = document.getElementById("msg-contact").value.trim();
-            const contentEl = document.getElementById("msg-content");
-            const content = contentEl.value.trim();
+            const textareaEl = document.getElementById("msg-content");
+            const content = textareaEl.value.trim();
 
             btn.disabled = true;
             btn.innerText = "Gönderiliyor...";
@@ -386,30 +429,43 @@
                 if (data && data.ip) visitorIP = data.ip;
             } catch (err) {}
 
-            const payload = {
-                _subject: `Shinato Yeni Mesaj: ${sender}`,
-                Gonderen: sender,
-                Iletisim_Bilgisi: contact,
-                Mesaj: content,
-                Ziyaretci_IP: visitorIP,
-                Cihaz_Tarayici: navigator.userAgent,
-                Tarih: new Date().toLocaleString("tr-TR")
-            };
+            const formData = new FormData();
+            formData.append("_subject", `Shinato Software - Yeni Mesaj: ${sender}`);
+            formData.append("_captcha", "false");
+            formData.append("_template", "table");
+            formData.append("Gönderen", sender);
+            formData.append("İletişim Bilgisi", contact);
+            formData.append("Mesaj Detayı", content);
+            formData.append("Ziyaretçi IP", visitorIP);
+            formData.append("Tarih Saat", new Date().toLocaleString("tr-TR"));
 
             try {
-                await fetch("https://formsubmit.co/ajax/mhakankaya0617@gmail.com", {
+                const response = await fetch("https://formsubmit.co/ajax/mhakankaya0617@gmail.com", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify(payload)
+                    headers: { "Accept": "application/json" },
+                    body: formData
                 });
-            } catch (err) {}
+                const result = await response.json();
 
-            btn.disabled = false;
-            btn.innerText = "Mesajı Gönder";
-            statusEl.style.color = "#10b981";
-            statusEl.innerText = "Mesajınız başarıyla iletildi!";
-            document.getElementById("quick-msg-form").reset();
-            contentEl.style.height = "84px";
+                btn.disabled = false;
+                btn.innerText = "Mesajı Gönder";
+
+                if (response.ok && (result.success === "true" || result.success === true)) {
+                    statusEl.style.color = "#10b981";
+                    statusEl.innerText = "Mesajınız başarıyla iletildi!";
+                    document.getElementById("quick-msg-form").reset();
+                    textareaEl.style.height = "auto";
+                } else {
+                    // İlk kullanımda FormSubmit aktivasyon maili bekliyorsa uyarır
+                    statusEl.style.color = "#f59e0b";
+                    statusEl.innerText = "Not: mhakankaya0617@gmail.com kutusuna gelen FormSubmit onay mailindeki 'Activate' tuşuna 1 kez basın.";
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.innerText = "Mesajı Gönder";
+                statusEl.style.color = "#ef4444";
+                statusEl.innerText = "Bağlantı hatası! Formu canlı sitede (https://shinatoapps.com) deneyin.";
+            }
         }
     </script>
 </body>

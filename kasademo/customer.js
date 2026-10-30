@@ -9,18 +9,7 @@ const CUST_BRAND_SWITCH_MS = 7000;
 const CUST_SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.&-/";
 
 const DEFAULT_THANK_YOU_POOL = [
-    "Siparişiniz alındı, harika bir çalışma seansı dileriz! :)",
-    "Bol kafein, yüksek odak! Afiyet olsun. (•‿•)",
-    "Notlarınızı hazırlayın, kahveniz yolda! (◠‿◕)",
-    "Burası sizin alanınız, rahatça çalışın. Afiyet olsun! ( ◜‿◝ )♡",
-    "Bugün de bizimle olduğunuz için teşekkürler. (◍•ᴗ•◍)❤",
-    "Zihniniz açık, kahveniz taze olsun! ＼(^o^)／",
-    "Verimli bir gün geçirmeniz dileğiyle, afiyet olsun. :)",
-    "Çalışmaya başlamadan önceki en güzel mola. Afiyet olsun! ༼ つ ◕‿◕ ༽つ",
-    "Masanıza geçin, gerisini bize bırakın. İyi çalışmalar! (•‿•)",
-    "Güzel bir kahve molası her zaman iyi gelir. (◠‿◕)",
-    "İşleriniz su gibi aksın, afiyet olsun! (づ｡◕‿‿◕｡)づ",
-    "Sizi aramızda görmek çok güzel, iyi odaklanmalar! (◍•ᴗ•◍)❤"
+    "Veda mesajı"
 ];
 
 const CustState = {
