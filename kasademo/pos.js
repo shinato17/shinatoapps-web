@@ -149,7 +149,6 @@ const DemoDB = {
                 const raw = localStorage.getItem(DB_STORAGE_KEY);
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    // Eğer aynı gün içindeysek mevcut veritabanını koru; yeni güne (00:00) geçildiyse sıfırla!
                     if (parsed.seededDate === todayIso) {
                         if (parsed.settings) this.settings = parsed.settings;
                         if (parsed.categories) this.categories = parsed.categories;
@@ -165,7 +164,6 @@ const DemoDB = {
             } catch (e) {}
         }
 
-        // Varsayılan Ayarları Sıfırla
         this.settings = {
             staff_discount_enabled: "1",
             staff_discount_pct: "50",
@@ -174,7 +172,6 @@ const DemoDB = {
             last_eod_real_date: ""
         };
 
-        // 6 ADET HAZIR KAMPANYA
         this.campaigns = [
             [1, "CPRAZ", "CPRAZ", "Caffè Latte ve San Sebastian Cheesecake sadece 220 TL.", JSON.stringify({
                 product1_id: 106, product1_name: "Caffè Latte",
@@ -198,7 +195,6 @@ const DemoDB = {
             }), todayDMY, 1, 0]
         ];
 
-        // GİRİLEN GÜNDEN GERİYE DOĞRU 30 İŞLEM (Her güne 1 işlem, toplam 30 gün)
         this.sales = [];
         this.eodHistory = [];
         const sampleTemplates = [
@@ -258,7 +254,6 @@ const DemoDB = {
         } catch (e) {}
     },
 
-    // Gün Sonu ve Aktif İş Günü Metotları
     isEodTakenToday() {
         const realToday = formatDateISO(getTodayDateObj());
         return this.settings.last_eod_real_date === realToday;
@@ -547,7 +542,6 @@ function initDailyDemoTimer() {
     setInterval(() => {
         const nowToday = formatDateISO(new Date());
         if (_demoTimerState.date !== nowToday) {
-            // GECE 00:00 OLDU -> Veritabanını, Renkleri ve 1 Saatlik Süreyi Sıfırla!
             _demoTimerState = { date: nowToday, remaining: DAILY_LIMIT_SECONDS };
             localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(_demoTimerState));
             localStorage.removeItem(DB_STORAGE_KEY);
@@ -581,7 +575,6 @@ function tryExtendDemoTime() {
 
     const entered = pwdInput ? pwdInput.value.trim() : "";
     if (entered === "906090") {
-        // Her 906090 girildiğinde +1 saat (60:00) ekler
         _demoTimerState.remaining += EXTENSION_BONUS_SECONDS;
         localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(_demoTimerState));
 
@@ -645,7 +638,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof initEndOfDayView === "function") initEndOfDayView();
     if (typeof initCustomerDisplay === "function") initCustomerDisplay();
 
-    // KÜRESEL ENTER TUŞU YÖNETİMİ (Kaydedildi Popup'ı Açıkken Enter'a Basınca Kapatır, Tekrar Kaydetmez!)
     document.addEventListener("keydown", (e) => {
         const alertModal = document.getElementById("modal-simple-alert");
         if (alertModal && alertModal.classList.contains("active")) {
@@ -1245,7 +1237,7 @@ function closeDualCalendarPopup() {
 }
 
 // ==========================================================================
-// 6. KATALOG EKRANI FONKSİYONLARI (ENTER HATASI GİDERİLDİ)
+// 6. KATALOG EKRANI FONKSİYONLARI
 // ==========================================================================
 function initCatalogEvents() {
     const entryCatName = document.getElementById("entry-cat-name");
@@ -1628,6 +1620,7 @@ function openHelpModal() { document.getElementById("modal-general-info").classLi
 function closeHelpModal() { document.getElementById("modal-general-info").classList.remove("active"); }
 function confirmExit() { document.getElementById("modal-exit-confirm").classList.add("active"); }
 function closeExitModal() { document.getElementById("modal-exit-confirm").classList.remove("active"); }
+
 // ==========================================================================
 // 8. KİŞİSELLEŞTİR POPUP (COLOR WHEEL + HEX KODU + 3 KAYIT SLOTU + 00:00 SIFIRLAMA)
 // ==========================================================================
@@ -1741,7 +1734,6 @@ function applyCustomThemeHex(hexCode, saveStorage = true, updateHslState = true)
     }
 }
 
-// Beyazdan Siyaha Parlaklık Skalası Hareket Ettirildiğinde
 function handleBrightnessSlider(lightVal) {
     const l = parseInt(lightVal, 10);
     _themeState.lightness = l;
@@ -1749,7 +1741,6 @@ function handleBrightnessSlider(lightVal) {
     applyCustomThemeHex(newHex, true, false);
 }
 
-// Kişiselleştir Tuşuna Çift Basılırsa Shinato Moruna Döner ve Kayıtlı Renkleri Sıfırlar
 function resetPersonalizeToDefault(e) {
     if (e) {
         e.preventDefault();
@@ -1781,12 +1772,10 @@ function renderColorSlotsUI() {
 
 function handleColorSlotClick(idx) {
     if (!_themeState.slots[idx]) {
-        // Kutu boşsa (+) o anki rengi kaydet
         _themeState.slots[idx] = _themeState.currentHex;
         localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(_themeState));
         renderColorSlotsUI();
     } else {
-        // Kutuda renk varsa o rengi uygula
         applyCustomThemeHex(_themeState.slots[idx], true);
     }
 }
@@ -1912,7 +1901,6 @@ function resetPersonalizeAtMidnight() {
         applyCustomThemeHex(_themeState.currentHex || DEFAULT_SHINATO_HEX, false);
         renderColorSlotsUI();
 
-        // Sağ tık ile kayıtlı renk kutusunu sıfırlama
         for (let i = 0; i < 3; i++) {
             const slotBtn = document.getElementById(`color-slot-${i}`);
             if (slotBtn) {
@@ -1946,37 +1934,49 @@ function resetPersonalizeAtMidnight() {
         });
     });
 })();
+
 // ==========================================================================
-// 9. MOBİLDE VİDEO GİBİ ZORUNLU YATAY (LANDSCAPE) MOD VE TAM EKRAN KİLİDİ
+// 9. SADECE GERÇEK MOBİLDE ZORUNLU YATAY MOD (PC'DE %100 TAM EKRAN KAPLAR)
 // ==========================================================================
+function isRealMobileDevice() {
+    const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
+    const touchSmallScreen = (window.matchMedia && window.matchMedia("(pointer: coarse)").matches && Math.min(window.screen.width, window.screen.height) <= 1024);
+    return uaMobile || touchSmallScreen;
+}
+
 function applyMobileLandscapeScale() {
     const winW = window.innerWidth;
     const winH = window.innerHeight;
-    const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || Math.min(winW, winH) <= 920;
+    const isMobile = isRealMobileDevice();
 
     const DESIGN_W = 1366;
     const DESIGN_H = 768;
+    const shell = document.querySelector(".pos-app-shell");
 
-    if (!isMobileDevice) {
+    // PC İSE: Kenar boşluğu veya küçültme yapma, %100 tüm ekranı kapla!
+    if (!isMobile) {
         document.body.classList.remove("mobile-forced-landscape");
         document.body.style.width = "100vw";
         document.body.style.height = "100vh";
         document.body.style.transform = "none";
+        if (shell) {
+            shell.style.width = "100vw";
+            shell.style.height = "100vh";
+        }
         return;
     }
 
+    // MOBİL İSE: Zorunlu yatay modda tam oturt
     document.body.classList.add("mobile-forced-landscape");
     document.body.style.width = DESIGN_W + "px";
     document.body.style.height = DESIGN_H + "px";
 
-    const shell = document.querySelector(".pos-app-shell");
     if (shell) {
         shell.style.width = DESIGN_W + "px";
         shell.style.height = DESIGN_H + "px";
     }
 
     if (winH > winW) {
-        // Telefon DİK tutuluyorsa: Ekranı 90 derece YAN ÇEVİR ve tam sığdır
         const scale = Math.min(winH / DESIGN_W, winW / DESIGN_H);
         const offsetX = winW - ((winW - DESIGN_H * scale) / 2);
         const offsetY = (winH - DESIGN_W * scale) / 2;
@@ -1984,7 +1984,6 @@ function applyMobileLandscapeScale() {
         document.body.style.transformOrigin = "0 0";
         document.body.style.transform = `translate(${offsetX}px, ${offsetY}px) rotate(90deg) scale(${scale})`;
     } else {
-        // Telefon YATAY tutuluyorsa: Doğrudan yatay ekrana tam oturt
         const scale = Math.min(winW / DESIGN_W, winH / DESIGN_H);
         const offsetX = (winW - DESIGN_W * scale) / 2;
         const offsetY = (winH - DESIGN_H * scale) / 2;
@@ -1994,12 +1993,10 @@ function applyMobileLandscapeScale() {
     }
 }
 
-// "Anladım, Demoyu Başlat" tuşuna basılınca video gibi Tam Ekran + Yatay Moda geçer
 const _origCloseHelpModal = closeHelpModal;
 closeHelpModal = function() {
     _origCloseHelpModal();
-    const isMobileDevice = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || Math.min(window.innerWidth, window.innerHeight) <= 920;
-    if (isMobileDevice) {
+    if (isRealMobileDevice()) {
         const docEl = document.documentElement;
         const reqFs = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.msRequestFullscreen;
         if (reqFs && !document.fullscreenElement) {
