@@ -7,6 +7,9 @@
     --samurai-dikey-konum: -30px;   /* Yukarı almak için -15px, aşağı almak için 15px yazabilirsin */
     --samurai-yatay-konum: 0px;     /* Sağa/sola kaydırmak için kullanabilirsin */
 
+    --samurai-mobil-olcek: 2;         /* TELEFON DİKEY modda samuray boyutu (1.6, 1.8, 2.0 yapabilirsin) */
+    --samurai-mobil-yatay-olcek: 1.9;    /* TELEFON YATAY modda samuray boyutu */
+
     --purple-main: #500062;
     --grey-dark: #2e3234;
     --grey-light: #C3C3C3;
@@ -616,7 +619,7 @@ body, html {
     }
 
     .samurai-img {
-        transform: scale(1.42) translateY(-8px);
+        transform: scale(var(--samurai-mobil-olcek)) translateY(-8px);
     }
 
     .title-shinato {
@@ -712,4 +715,106 @@ body, html {
 
     .profile-name { font-size: 1.05rem; }
     .row-value { font-size: 0.88rem; }
+}
+
+/* ==========================================================================
+   TELEFON YATAY MOD (Kısa ekran: 3 tuş yan yana, hepsi ekran yüksekliğine göre)
+   Telefon yan tutulunca genişlik 820px'i geçse bile burası devreye girer.
+   ========================================================================== */
+@media screen and (orientation: landscape) and (max-height: 520px) {
+    .main-wrapper {
+        height: 100vh;
+        height: 100dvh;
+    }
+
+    /* Üst Mor Alan */
+    .hero-section {
+        height: 56%;
+        min-height: 0;
+    }
+
+    .hero-container {
+        padding: 0 5vw;
+        gap: 4vw;
+        justify-content: center;
+    }
+
+    .samurai-box {
+        height: 92%;
+        min-width: 140px;
+    }
+
+    .samurai-img {
+        transform: scale(var(--samurai-mobil-yatay-olcek)) translateY(-6px);
+    }
+
+    .title-shinato {
+        font-size: clamp(2.4rem, 15vh, 4.8rem);
+        line-height: 0.98;
+    }
+
+    .title-software {
+        font-size: clamp(1.6rem, 10vh, 3.2rem);
+        line-height: 1.08;
+    }
+
+    .brand-slogan {
+        font-size: clamp(0.7rem, 3.4vh, 1.05rem);
+        margin-top: 1vh;
+        min-height: 1.4rem;
+    }
+
+    /* Alt Gri Alan: 3 tuş tek satırda, yüksekliğe göre ölçeklenir */
+    .bottom-section {
+        height: 44%;
+        padding: 1.5vh 0 1vh 0;
+        justify-content: space-between;
+    }
+
+    .button-group {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5vw;
+        padding: 0 4vw;
+        width: 100%;
+        margin: 0;
+    }
+
+    .button-group .nav-btn:nth-child(1),
+    .button-group .nav-btn:nth-child(2),
+    .button-group .nav-btn:nth-child(3) {
+        justify-self: center;
+    }
+
+    .btn-side,
+    .btn-center {
+        width: 27vw;
+        max-width: 280px;
+        flex: 0 0 auto;
+        height: clamp(54px, 19vh, 92px);
+        min-height: 0;
+        max-height: none;
+        font-size: clamp(1.2rem, 5.6vh, 1.9rem);
+        border-radius: 20px;
+    }
+
+    .btn-line {
+        bottom: 8px;
+    }
+
+    .status-bar {
+        padding-top: 2px;
+        flex-shrink: 0;
+        font-size: 0.75rem;
+    }
+
+    /* Yatay modda popup kısa ekrana sığsın */
+    .modal-box {
+        min-height: auto;
+        max-height: 92dvh;
+        padding: 20px 22px;
+    }
 }
